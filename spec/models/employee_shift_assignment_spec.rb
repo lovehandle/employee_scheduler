@@ -1,5 +1,8 @@
 require 'spec_helper'
 
 describe EmployeeShiftAssignment do
-  pending "add some examples to (or delete) #{__FILE__}"
+  it {
+    should belong_to :employee
+    should belong_to :shift
+  }
 end
