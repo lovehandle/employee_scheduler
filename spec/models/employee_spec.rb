@@ -11,7 +11,7 @@ describe Employee do
     end
 
     it "should return all the conflicts of employee on given date" do
-      @conflict.employee.get_conflicts_on(@conflict.date).should_not be_blank
+      @conflict.employee.get_conflicts_on(@conflict.start_time.to_date).should_not be_blank
     end
   end
 end

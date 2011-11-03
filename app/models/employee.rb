@@ -25,6 +25,7 @@ class Employee < ActiveRecord::Base
   has_many :shifts, :through => :employee_shift_assignments
   
   def get_conflicts_on(date)
-    self.conflicts.where(:date => date)
+    #TODO :: Need to handle shifts that can span across dates in future .
+    self.conflicts.where("date(start_time) = ? ", date )
   end
 end

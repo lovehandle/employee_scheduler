@@ -14,9 +14,8 @@
 ActiveRecord::Schema.define(:version => 20111101062900) do
 
   create_table "conflicts", :force => true do |t|
-    t.date     "date"
-    t.string   "start_time"
-    t.string   "end_time"
+    t.datetime "start_time"
+    t.datetime "end_time"
     t.integer  "employee_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -48,9 +47,8 @@ ActiveRecord::Schema.define(:version => 20111101062900) do
   add_index "employees", ["reset_password_token"], :name => "index_employees_on_reset_password_token", :unique => true
 
   create_table "shifts", :force => true do |t|
-    t.string   "start_time"
-    t.string   "end_time"
-    t.date     "date"
+    t.datetime "start_time"
+    t.datetime "end_time"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
