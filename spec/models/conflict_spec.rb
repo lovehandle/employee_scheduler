@@ -6,22 +6,32 @@ describe Conflict do
     should validate_presence_of :start_time
     should validate_presence_of :end_time
   }
-  
+
   describe "#lies_in_shift?" do
-    before(:each) do
-      employee = FactoryGirl.create(:employee)
-      @conflict = Conflict.create(:start_time => DateTime.new(2011,11,3,1,45), :end_time => DateTime.new(2011,11,3,4,30), :employee_id => employee.id)
+    let(:overlaps) { true }
+
+    let(:conflict_interval) { mock(EmployeeScheduler::Interval, :overlaps? => overlaps) }
+    let(:shift_interval)    { mock(EmployeeScheduler::Interval) }
+    let(:shift)             { mock(Shift, :to_interval => shift_interval) }
+
+    before do
+      subject.stub(:to_interval).and_return(conflict_interval)
     end
-    
-    it "should return true given that conflict lies in shift" do
-      shift = Shift.create(:start_time => DateTime.new(2011,11,3,0,45), :end_time => DateTime.new(2011,11,3,2,30))
-      @conflict.lies_in_shift?(shift).should be_true
+
+    context "intervals overlap" do
+      it { subject.lies_in_shift?(shift).should be_true }
     end
-    
-    it "should return false given that conflict  doesn't lies in shift" do
-      shift = Shift.create(:start_time => DateTime.new(2011,11,3,0,45), :end_time => DateTime.new(2011,11,3,1,30))
-      @conflict.lies_in_shift?(shift).should be_false
+
+    context "intervals do not overlap" do
+      let(:overlaps) { false }
+      it { subject.lies_in_shift?(shift).should be_false }
     end
   end
-  
+
+  describe "#to_interval" do
+    it "returns an Interval instance" do
+      subject.to_interval.should be_a(EmployeeScheduler::Interval)
+    end
+  end
+
 end

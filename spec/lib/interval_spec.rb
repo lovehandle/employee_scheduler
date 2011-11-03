@@ -1,57 +1,68 @@
 require 'spec_helper'
 
 describe EmployeeScheduler::Interval do
-  describe " #overlaps? " do
-    it " should return true " do
-      shift_one = Shift.create(:start_time => DateTime.new(2011,11,3,2,0), :end_time => DateTime.new(2011,11,3,4,0))
-      shift_two = Shift.create(:start_time => DateTime.new(2011,11,3,3,30), :end_time => DateTime.new(2011,11,3,4,30))
-      
-      interval_one = EmployeeScheduler::Interval.create_interval_from_shift(shift_one)
-      interval_two = EmployeeScheduler::Interval.create_interval_from_shift(shift_two)
-      
-      interval_one.overlaps?(interval_two).should be_true
-      interval_two.overlaps?(interval_one).should be_true
-      
-      shift_two = Shift.create(:start_time => DateTime.new(2011,11,3,1,30), :end_time => DateTime.new(2011,11,3,2,30))
-      interval_two = EmployeeScheduler::Interval.create_interval_from_shift(shift_two)
-      
-      interval_one.overlaps?(interval_two).should be_true
-      interval_two.overlaps?(interval_one).should be_true
-      
-      shift_two = Shift.create(:start_time => DateTime.new(2011,11,3,2,30), :end_time => DateTime.new(2011,11,3,3,30))
-      interval_two = EmployeeScheduler::Interval.create_interval_from_shift(shift_two)
-      
-      interval_one.overlaps?(interval_two).should be_true
-      interval_two.overlaps?(interval_one).should be_true
-      
-      shift_two = Shift.create(:start_time => DateTime.new(2011,11,3,1,0), :end_time => DateTime.new(2011,11,3,5,0))
-      interval_two = EmployeeScheduler::Interval.create_interval_from_shift(shift_two)
-      
-      interval_one.overlaps?(interval_two).should be_true
-      interval_two.overlaps?(interval_one).should be_true
+
+  let(:start_time_one) { DateTime.new }
+  let(:end_time_one)   { start_time_one + 3.hours }
+
+  let(:start_time_two) { start_time_one }
+  let(:end_time_two)   { end_time_one   }
+
+  let(:interval_one) { described_class.new(start_time_one, end_time_one) }
+  let(:interval_two) { described_class.new(start_time_two, end_time_two) }
+
+  describe "#overlaps?" do
+    subject { interval_one.overlaps?(interval_two) }
+
+    context "intervals have identical start_time and end_time" do
+      it { should be_true }
     end
-    
-    it " should return false " do
-      shift_one = Shift.create(:start_time => DateTime.new(2011,11,3,2,0), :end_time => DateTime.new(2011,11,3,4,0))
-      shift_two = Shift.create(:start_time => DateTime.new(2011,11,3,0,0), :end_time => DateTime.new(2011,11,3,2,0))
-      
-      interval_one = EmployeeScheduler::Interval.create_interval_from_shift(shift_one)
-      interval_two = EmployeeScheduler::Interval.create_interval_from_shift(shift_two)
-      
-      interval_one.overlaps?(interval_two).should be_false
-      interval_two.overlaps?(interval_one).should be_false
-      
-      shift_two = Shift.create(:start_time => DateTime.new(2011,11,3,0,0), :end_time => DateTime.new(2011,11,3,1,0))
-      interval_two = EmployeeScheduler::Interval.create_interval_from_shift(shift_two)
-      
-      interval_one.overlaps?(interval_two).should be_false
-      interval_two.overlaps?(interval_one).should be_false
-      
-      shift_two = Shift.create(:start_time => DateTime.new(2011,11,3,4,0), :end_time => DateTime.new(2011,11,3,5,0))
-      interval_two = EmployeeScheduler::Interval.create_interval_from_shift(shift_two)
-      
-      interval_one.overlaps?(interval_two).should be_false
-      interval_two.overlaps?(interval_one).should be_false
+
+    context "interval includes start_time but not end_time" do
+      let(:start_time_two) { start_time_one + 1.hour }
+      let(:end_time_two)   { end_time_one + 1.hour   }
+
+      it { should be_true }
+    end
+
+    context "interval includes end_time but not start_time" do
+      let(:start_time_two) { start_time_one - 1.hour }
+      let(:end_time_two)   { end_time_one - 1.hour   }
+
+      it { should be_true }
+    end
+
+    context "interval includes start_time and end_time" do
+      let(:start_time_two) { start_time_one + 1.hour }
+      let(:end_time_two)   { end_time_one - 1.hour   }
+
+      it { should be_true }
+    end
+
+    context "interval does not include start_time or end_time" do
+      let(:start_time_two) { start_time_one - 1.hour }
+      let(:end_time_two)   { end_time_one + 1.hour   }
+
+      it { should be_false }
     end
   end
+
+  describe ".overlaps?" do
+    subject { described_class.overlaps?(interval_one, interval_two) }
+
+    let(:overlaps) { true }
+
+    before do
+      interval_one.stub(:overlaps?).and_return(overlaps)
+    end
+
+    it { should be_true }
+
+    context "interval_one#overlaps? returns false" do
+      let(:overlaps) { false }
+
+      it { should be_false }
+    end
+  end
+
 end
