@@ -14,6 +14,10 @@ class Conflict < ActiveRecord::Base
 
   # @api public
   def lies_in_shift?(shift)
+    unless shift.is_a?(Shift)
+      raise ArgumentError, "+shift+ must be a Shift"
+    end
+
     self.to_interval.overlaps?(shift.to_interval)
   end
 

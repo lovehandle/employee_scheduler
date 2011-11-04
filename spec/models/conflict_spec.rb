@@ -11,8 +11,7 @@ describe Conflict do
     let(:overlaps) { true }
 
     let(:conflict_interval) { mock(EmployeeScheduler::Interval, :overlaps? => overlaps) }
-    let(:shift_interval)    { mock(EmployeeScheduler::Interval) }
-    let(:shift)             { mock(Shift, :to_interval => shift_interval) }
+    let(:shift)             { Shift.new }
 
     before do
       subject.stub(:to_interval).and_return(conflict_interval)
@@ -29,6 +28,20 @@ describe Conflict do
   end
 
   describe "#to_interval" do
+
+    let(:start_time) { DateTime.new }
+    let(:end_time)   { start_time + 3.hours }
+
+    before do
+      subject.stub(:start_time).and_return(start_time)
+      subject.stub(:start_time).and_return(start_time)
+    end
+
+    it "initializes a new Interval" do
+      EmployeeScheduler::Interval.should_receive(:new).with(start_time, end_time)
+      subject.to_interval
+    end
+
     it "returns an Interval instance" do
       subject.to_interval.should be_a(EmployeeScheduler::Interval)
     end

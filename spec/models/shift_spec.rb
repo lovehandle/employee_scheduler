@@ -11,6 +11,20 @@ describe Shift do
   end
 
   describe "#to_interval" do
+
+    let(:start_time) { DateTime.new }
+    let(:end_time)   { start_time + 3.hours }
+
+    before do
+      subject.stub(:start_time).and_return(start_time)
+      subject.stub(:start_time).and_return(start_time)
+    end
+
+    it "initializes a new Interval" do
+      EmployeeScheduler::Interval.should_receive(:new).with(start_time, end_time)
+      subject.to_interval
+    end
+
     it "returns an instance of EmployeeScheduler::Interval" do
       subject.to_interval.should be_a(EmployeeScheduler::Interval)
     end
