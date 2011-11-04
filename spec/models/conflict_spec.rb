@@ -34,7 +34,7 @@ describe Conflict do
 
     before do
       subject.stub(:start_time).and_return(start_time)
-      subject.stub(:start_time).and_return(start_time)
+      subject.stub(:end_time).and_return(end_time)
     end
 
     it "initializes a new Interval" do

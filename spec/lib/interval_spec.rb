@@ -39,9 +39,16 @@ describe EmployeeScheduler::Interval do
       it { should be_true }
     end
 
-    context "interval does not include start_time or end_time" do
+    context "interval is included within start_time and end_time" do
       let(:start_time_two) { start_time_one - 1.hour }
       let(:end_time_two)   { end_time_one + 1.hour   }
+
+      it { should be_true }
+    end
+
+    context "interval does not conflict with start_time or end_time" do
+      let(:start_time_two) { end_time_one + 1.hour }
+      let(:end_time_two)   { end_time_one + 2.hour }
 
       it { should be_false }
     end
