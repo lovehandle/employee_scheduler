@@ -27,5 +27,11 @@ class Shift < ActiveRecord::Base
   def to_interval
     EmployeeScheduler::Interval.new(start_time, end_time)
   end
+  
+  def date
+   #TODO:: Need to support shifts spanning across multiple dates in future
+    self[:start_time].to_date
+  end
+
 
 end
